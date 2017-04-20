@@ -1901,6 +1901,7 @@ public class PayaraMicroImpl implements PayaraMicroBoot {
         autoBindSsl = Boolean.getBoolean("payaramicro.autoBindSsl");
         generateLogo = Boolean.getBoolean("payaramicro.logo");
         logToFile = Boolean.getBoolean("payaramicro.logToFile");
+        userLogFile = System.getProperty("payaramicro.userLogFile");
         enableAccessLog = Boolean.getBoolean("payaramicro.enableAccessLog");
         enableAccessLogFormat = Boolean.getBoolean("payaramicro.enableAccessLogFormat");
         logPropertiesFile = Boolean.getBoolean("payaramicro.logPropertiesFile");
@@ -2044,6 +2045,10 @@ public class PayaraMicroImpl implements PayaraMicroBoot {
         props.setProperty("payaramicro.hostAware", Boolean.toString(hostAware));
         props.setProperty("payaramicro.disablePhoneHome", Boolean.toString(disablePhoneHome));
 
+        if (userLogFile != null) {
+            props.setProperty("payaramicro.userLogFile", userLogFile);
+        }
+        
         if (httpPort != Integer.MIN_VALUE) {
             props.setProperty("payaramicro.port", Integer.toString(httpPort));
         }
