@@ -1907,6 +1907,7 @@ public class PayaraMicroImpl implements PayaraMicroBoot {
         logPropertiesFile = Boolean.getBoolean("payaramicro.logPropertiesFile");
         enableHealthCheck = Boolean.getBoolean("payaramicro.enableHealthCheck");
         httpPort = Integer.getInteger("payaramicro.port", Integer.MIN_VALUE);
+        sslPort = Integer.getInteger("payaramicro.sslPort", Integer.MIN_VALUE);
         hzMulticastGroup = System.getProperty("payaramicro.mcAddress");
         hzPort = Integer.getInteger("payaramicro.mcPort", Integer.MIN_VALUE);
         hostAware = Boolean.getBoolean("payaramicro.hostAware");
