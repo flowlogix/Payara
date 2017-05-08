@@ -186,7 +186,7 @@ public class StandardPipeline
         level = "INFO"
     )
     public static final String STANDARD_PIPELINE_NULL_INFO = "AS-WEB-CORE-00242";
-
+    
     // ----------------------------------------------------------- Constructors
 
 
@@ -786,7 +786,44 @@ public class StandardPipeline
         }
     }
 
+    private void postInvoke(final GlassFishValve savedValve, final Request request, final Response response) throws IOException, ServletException{
+        if(request.getRequest().isAsyncSupported() && request.getRequest().isAsyncStarted()){
+            request.getRequest().getAsyncContext().addListener(new AsyncListener() {
+                @Override
+                public void onComplete(AsyncEvent event) throws IOException {
+                    try { 
+                        savedValve.postInvoke(request, response);
+                    } catch (ServletException ex) {
+                        log.log(Level.SEVERE, CoyoteAdapter.INTERNAL_ERROR, ex);
+                    }
+                }
 
+                @Override
+                public void onTimeout(AsyncEvent event) throws IOException {
+                    try { 
+                        savedValve.postInvoke(request, response);
+                    } catch (ServletException ex) {
+                        log.log(Level.SEVERE, CoyoteAdapter.INTERNAL_ERROR, ex);
+                    }
+                }
+
+                @Override
+                public void onError(AsyncEvent event) throws IOException {
+                    try { 
+                        savedValve.postInvoke(request, response);
+                    } catch (ServletException ex) {
+                        log.log(Level.SEVERE, CoyoteAdapter.INTERNAL_ERROR, ex);
+                    }
+                }
+
+                @Override
+                public void onStartAsync(AsyncEvent event) throws IOException {}
+            });
+        } else {
+           savedValve.postInvoke(request, response); 
+        }
+    }
+    
     private Request getRequest(Request request) {
 	Request r = (Request)
 	    request.getNote(Globals.WRAPPED_REQUEST);
