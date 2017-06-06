@@ -56,11 +56,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import java.text.MessageFormat;
-<<<<<<< HEAD
-import java.util.Date;
-=======
 import java.util.*;
->>>>>>> 9e77088... PAYARA-1694-Healthcheck-still-prints-out-error-in-log (#1626)
 
 /**
  * @author mertcaliskan
