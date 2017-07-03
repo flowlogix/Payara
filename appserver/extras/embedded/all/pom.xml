@@ -343,10 +343,10 @@
        </dependency>
 
        <dependency>
-           <groupId>fish.payara.packager</groupId>
-           <artifactId>payara-api-package</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
+           <groupId>fish.payara.api</groupId>
+           <artifactId>payara-api</artifactId>
+           <version>4.1.1.171.1</version>
+           <type>jar</type>
            <optional>true</optional>
        </dependency>
     </dependencies>
