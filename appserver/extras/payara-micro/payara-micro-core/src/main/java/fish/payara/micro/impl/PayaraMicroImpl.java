@@ -1431,10 +1431,12 @@ public class PayaraMicroImpl implements PayaraMicroBoot {
             public void run() {
                 try {
                     if (gf != null) {
-                        gf.stop();
                         gf.dispose();
                     }
                 } catch (GlassFishException ex) {
+                } catch (IllegalStateException ex) {
+                    // Just log at a fine level and move on
+                    LOGGER.log(Level.FINE, "Already shut down");
                 }
             }
         });
@@ -1899,11 +1901,13 @@ public class PayaraMicroImpl implements PayaraMicroBoot {
         autoBindSsl = Boolean.getBoolean("payaramicro.autoBindSsl");
         generateLogo = Boolean.getBoolean("payaramicro.logo");
         logToFile = Boolean.getBoolean("payaramicro.logToFile");
+        userLogFile = System.getProperty("payaramicro.userLogFile");
         enableAccessLog = Boolean.getBoolean("payaramicro.enableAccessLog");
         enableAccessLogFormat = Boolean.getBoolean("payaramicro.enableAccessLogFormat");
         logPropertiesFile = Boolean.getBoolean("payaramicro.logPropertiesFile");
         enableHealthCheck = Boolean.getBoolean("payaramicro.enableHealthCheck");
         httpPort = Integer.getInteger("payaramicro.port", Integer.MIN_VALUE);
+        sslPort = Integer.getInteger("payaramicro.sslPort", Integer.MIN_VALUE);
         hzMulticastGroup = System.getProperty("payaramicro.mcAddress");
         hzPort = Integer.getInteger("payaramicro.mcPort", Integer.MIN_VALUE);
         hostAware = Boolean.getBoolean("payaramicro.hostAware");
@@ -2042,6 +2046,10 @@ public class PayaraMicroImpl implements PayaraMicroBoot {
         props.setProperty("payaramicro.hostAware", Boolean.toString(hostAware));
         props.setProperty("payaramicro.disablePhoneHome", Boolean.toString(disablePhoneHome));
 
+        if (userLogFile != null) {
+            props.setProperty("payaramicro.userLogFile", userLogFile);
+        }
+        
         if (httpPort != Integer.MIN_VALUE) {
             props.setProperty("payaramicro.port", Integer.toString(httpPort));
         }

@@ -56,7 +56,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import java.text.MessageFormat;
-import java.util.Date;
+import java.util.*;
 
 /**
  * @author mertcaliskan
@@ -100,11 +100,10 @@ public class HistoricHealthCheckEventRetriever implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport actionReport = context.getActionReport();
 
-        if (!service.isHistoricalTraceEnabled()) {
-            actionReport.setMessage("Health Check Historical Trace is not enabled!");
-            actionReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        if (!service.isEnabled()){
+            actionReport.setMessage("Health Check service is not enabled");
             return;
-        }
+        }      
         else {
             if (server.isDas()) {
                 if (targetUtil.getConfig(target).isDas()) {
@@ -124,12 +123,22 @@ public class HistoricHealthCheckEventRetriever implements AdminCommand {
         HistoricHealthCheckEvent[] traces = eventStore.getTraces(first);
 
         ColumnFormatter columnFormatter = new ColumnFormatter(headers);
-        for (HistoricHealthCheckEvent historicHealthCheckEvent : traces) {
-            Object values[] = new Object[2];
-            values[0] = new Date(historicHealthCheckEvent.getOccurringTime());
-            values[1] = constructMessage(historicHealthCheckEvent);
-            columnFormatter.addRow(values);
+        Properties extrasProps = new Properties();
+        List historic = new ArrayList<>();
+
+        if (traces != null) {
+            for (HistoricHealthCheckEvent historicHealthCheckEvent : traces) {
+                LinkedHashMap<String, String> messages = new LinkedHashMap<String, String>();
+                Object values[] = new Object[2];
+                values[0] = new Date(historicHealthCheckEvent.getOccurringTime());
+                values[1] = constructMessage(historicHealthCheckEvent);
+                messages.put("dateTime",values[0].toString());
+                messages.put("message", (String) values[1]);
+                historic.add(messages);
+                columnFormatter.addRow(values);
+            }
         }
+
         actionReport.setMessage(columnFormatter.toString());
         actionReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }

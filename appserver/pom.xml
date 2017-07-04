@@ -47,7 +47,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-nucleus-parent</artifactId>
-        <version>4.1.1.171.1</version>
+        <version>4.1.1.171.4</version>
         <relativePath>../nucleus/pom.xml</relativePath>
     </parent>    
     <artifactId>glassfish-parent</artifactId>
@@ -58,7 +58,7 @@
         <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/4.1/main/appserver</connection>
         <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/4.1/main/appserver</developerConnection>
         <url>https://svn.java.net/svn/glassfish~svn/tags/4.1/main/appserver</url>
-      <tag>payara-server-4.1.1.171.1</tag>
+      <tag>payara-server-4.1.1.171.4</tag>
   </scm>
     
     <properties>
@@ -69,7 +69,7 @@
         <jstl-api.version>1.2.1</jstl-api.version>
         <mojarra.version>2.2.14</mojarra.version>
         <jsf-ext.version>0.2</jsf-ext.version>
-        <woodstock.version>4.0.2.10.payara-p5</woodstock.version>
+        <woodstock.version>4.0.2.10.payara-p6</woodstock.version>
         <javax.ejb-api.version>3.2</javax.ejb-api.version>
         <javax.interceptor-api.version>1.2</javax.interceptor-api.version>
         <javax.xml.rpc-api.version>1.1.1</javax.xml.rpc-api.version>
@@ -99,7 +99,7 @@
         <minor_version>1</minor_version>
         <update_version>1</update_version>
         <payara_version>171</payara_version>
-        <payara_update_version>1</payara_update_version>
+        <payara_update_version>4</payara_update_version>
         <install.dir.name>payara${major_version}${minor_version}</install.dir.name>
         
         <javaee.major_version>7</javaee.major_version>
@@ -133,7 +133,7 @@
         <javadb.version>10.10.2.0</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>2.4.1.Final</weld.version>
-        <jboss.classfilewriter.version>1.1.2.Final</jboss.classfilewriter.version>
+        <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
         <tyrus.version>1.13</tyrus.version>
