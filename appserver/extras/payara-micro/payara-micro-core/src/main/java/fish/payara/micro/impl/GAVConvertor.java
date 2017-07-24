@@ -150,7 +150,7 @@ public class GAVConvertor {
      */
     private URL findArtefactURL(List<URL> repositoryURLs, String relativeURLString) 
             throws GlassFishException {     
-        final String[] archiveTypes = new String[]{".jar", ".war", ".ear", "rar"};
+        final String[] archiveTypes = new String[]{".jar", ".war", ".ear", ".rar"};
         
         boolean validURLFound = false;
         
