@@ -149,6 +149,27 @@
 	    <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <jboss.logging.version>3.3.0.Final</jboss.logging.version>
         <guava.version>19.0</guava.version>
+        <json.version>1.0</json.version>
+        <dojo-ajax-nodemo.version>0.4.4</dojo-ajax-nodemo.version>
+        <prototype.version>1.5.0</prototype.version>
+        <dataprovider.version>1.0</dataprovider.version>
+        <commons-fileupload.version>1.3.3</commons-fileupload.version>
+        <imqjmx.version>4.3</imqjmx.version>
+        <genericra.version>2.0-20081121</genericra.version>
+        <ldapbp.version>1.0</ldapbp.version>
+        <osgi-resource-locator.version>1.0.1</osgi-resource-locator.version>
+        <osgi-javaee-base.version>1.0.7</osgi-javaee-base.version>
+        <osgi-web-container.version>2.0.0</osgi-web-container.version>
+        <osgi-ejb-container.version>1.0.3</osgi-ejb-container.version>
+        <osgi-jpa.version>1.0.2</osgi-jpa.version>
+        <osgi-jpa-extension.version>1.0.2</osgi-jpa-extension.version>
+        <osgi-http.version>1.0.6</osgi-http.version>
+        <osgi-cdi.version>1.0.3</osgi-cdi.version>
+        <osgi-jta.version>1.0.1</osgi-jta.version>
+        <osgi-jdbc.version>1.0.1</osgi-jdbc.version>
+        <osgi-ee-resources.version>2.0.0</osgi-ee-resources.version>
+        <maven-processor-plugin.version>2.0.4</maven-processor-plugin.version>
+        <ddl.version>RELEASE65</ddl.version>
     </properties>
 
     <modules>
@@ -752,32 +773,32 @@
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
                 <artifactId>json</artifactId>
-                <version>1.0</version>
+                <version>${json.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
                 <artifactId>dojo-ajax-nodemo</artifactId>
-                <version>0.4.4</version>
+                <version>${dojo-ajax-nodemo.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
                 <artifactId>prototype</artifactId>
-                <version>1.5.0</version>
+                <version>${prototype.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
                 <artifactId>dataprovider</artifactId>
-                <version>1.0</version>
+                <version>${dataprovider.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
-                <version>1.3.3</version>
+                <version>${commons-fileupload.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.messaging.mq</groupId>
                 <artifactId>imqjmx</artifactId>
-                <version>4.3</version>
+                <version>${imqjmx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.mq</groupId>
@@ -927,7 +948,7 @@
             <dependency>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
-                <version>2.0.4</version>
+                <version>${maven-processor-plugin.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.docs.help</groupId>
@@ -1071,7 +1092,7 @@
             <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>ddl</artifactId>
-                <version>RELEASE65</version>
+                <version>${ddl.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.tyrus</groupId>
