@@ -1665,6 +1665,7 @@ public class PayaraMicroImpl implements PayaraMicroBoot {
         // check hazelcast cluster overrides
         if (noCluster) {
             preBootCommands.add(new BootCommand("set", "configs.config.server-config.hazelcast-runtime-configuration.enabled=false"));
+            preBootCommands.add(new BootCommand("set", "configs.config.server-config.ejb-container.ejb-timer-service.ejb-timer-service=Dummy"));
         } else {
 
             if (hzPort > Integer.MIN_VALUE) {
