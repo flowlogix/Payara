@@ -369,6 +369,17 @@ public class ListSubComponentsCommand implements AdminCommand {
                 String canonicalName = wcd.getCanonicalName();
                 sb.append("<");
                 String wcdType = (wcd.isServlet() ? "Servlet" : "JSP");
+		 // Determine if the object is a JAX-RS Application class based on a few assumptions:
+		// JAX-RS Application classes aren't servlets.
+                if (!wcd.isServlet()
+			// They will only ever have one mapping.
+                        && wcd.getUrlPatternsSet().size() == 1
+			// They will map to multiple resources (has an asterisk even with only 1 resource).
+                        && wcd.getUrlPatternsSet().toArray(new String[]{})[0].contains("*")
+			// Should always be true for JAX-RS Application classes.
+                        && wcd.getLoadOnStartUp() == null) {
+                    wcdType = "JAX-RS";
+                }
                 sb.append(wcdType);
                 sb.append(">"); 
                 moduleSubComponentMap.put(canonicalName, sb.toString());
