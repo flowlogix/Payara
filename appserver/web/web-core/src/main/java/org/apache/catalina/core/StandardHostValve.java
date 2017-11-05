@@ -56,6 +56,8 @@
  * limitations under the License.
  */
 
+// Portions Copyright [2017] [Payara Foundation and/or its affiliates]
+
 package org.apache.catalina.core;
 
 import org.apache.catalina.*;
@@ -75,6 +77,8 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ResourceBundle;
+import org.apache.catalina.deploy.FilterMap;
+import org.apache.catalina.util.URLPattern;
 // END SJSAS 6374691
 
 /**
@@ -349,12 +353,12 @@ final class StandardHostValve
      * @param response The response being generated
      */
     protected void status(Request request, Response response) {
-
+        
         // Handle a custom error page for this status code
         Context context = request.getContext();
         if (context == null)
             return;
-
+        
         /*
          * Only look for error pages when isError() is set.
          * isError() is set when response.sendError() is invoked.
@@ -371,22 +375,39 @@ final class StandardHostValve
                 if (!file.exists()) {
                     File file2 = new File(errorPage.getLocation());
                     if (!file2.exists()) {
-                        log.log(Level.WARNING, ERROR_PAGE_NOT_EXIST,
-                                new Object[]{file.getAbsolutePath(), file2.getAbsolutePath()});
+                        boolean fileExists = false;
+                        for (String servletMapping : ((StandardHost) getContainer()).findDeployedApp(context.getPath())
+                                .findServletMappings()) {
+                            if (URLPattern.match(servletMapping, errorPage.getLocation())) {
+                                fileExists = true;
+                                break;
+                            }
+                        }
+                        if (!fileExists) {
+                            for (FilterMap mapping : ((StandardHost) getContainer()).findDeployedApp(context.getPath())
+                                    .findFilterMaps()) {
+                                if (mapping.getDispatcherTypes().contains(DispatcherType.ERROR)
+                                        && URLPattern.match(mapping.getURLPattern(), errorPage.getLocation())) {
+                                        fileExists = true;
+                                        break;
+                                }
+                            }
+                            if (!fileExists) {
+                                log.log(Level.WARNING, LogFacade.ERROR_PAGE_NOT_EXIST,
+                                    new Object[]{file.getAbsolutePath(), file2.getAbsolutePath()});
+                            }
+                        }
                     }
                 }
             }
             setErrorPageContentType(response, errorPage.getLocation(), context);
             dispatchToErrorPage(request, response, errorPage, null, null, statusCode);
-        } else if (statusCode >= 400 && statusCode < 600 &&
-                context.getDefaultErrorPage() != null) {
-            dispatchToErrorPage(request, response,
-                context.getDefaultErrorPage(), null, null, statusCode);
+        } else if (statusCode >= 400 && statusCode < 600 && context.getDefaultErrorPage() != null) {
+            dispatchToErrorPage(request, response, context.getDefaultErrorPage(), null, null, statusCode);
         }
         // START SJSAS 6324911
         else {
-            errorPage = ((StandardHost) getContainer()).findErrorPage(
-                                                        statusCode);
+            errorPage = ((StandardHost) getContainer()).findErrorPage(statusCode);
             if (errorPage != null) {
                 if (errorPage.getLocation() != null) {
                     File file = new File(context.getDocBase(), errorPage.getLocation());
@@ -715,5 +736,4 @@ final class StandardHostValve
                 ((ServletResponse) response).setContentType(str);
         }
     }
-
 }
