@@ -393,7 +393,7 @@ final class StandardHostValve
                                 }
                             }
                             if (!fileExists) {
-                                log.log(Level.WARNING, LogFacade.ERROR_PAGE_NOT_EXIST,
+                                log.log(Level.WARNING, ERROR_PAGE_NOT_EXIST,
                                     new Object[]{file.getAbsolutePath(), file2.getAbsolutePath()});
                             }
                         }
