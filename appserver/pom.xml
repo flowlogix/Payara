@@ -1119,7 +1119,7 @@
                 <jdk>1.7</jdk>
             </activation>
 	    <properties>
-                <mq.version>5.1.1-b02.payara-p2</mq.version>
+                <mq.version>5.1.1-b02.payara-p1</mq.version>
             </properties>
         </profile>
         <profile>
