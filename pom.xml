@@ -118,7 +118,6 @@
             <modules>
                 <module>nucleus</module>
                 <module>appserver</module>
-                <module>api</module>
             </modules>
             <properties>
                 <maven.test.skip>true</maven.test.skip>
@@ -169,7 +168,6 @@
             <modules>
                 <module>nucleus</module>
                 <module>appserver</module>
-                <module>api</module>
             </modules>
             <properties>
                 <maven.test.skip>true</maven.test.skip>
