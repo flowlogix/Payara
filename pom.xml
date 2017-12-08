@@ -195,7 +195,7 @@
                                 <phase>site</phase>
                                 <configuration>
                                     <!-- Specific configuration for the aggregate report -->
-                                    <finalName>payara-4.1.1.174.10</finalName>
+                                    <finalName>payara-4.1.1.171.10</finalName>
                                 </configuration>
                             </execution>
                         </executions>
