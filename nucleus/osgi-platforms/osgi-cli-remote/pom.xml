@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.main.osgi-platforms</groupId>
         <artifactId>osgi-platforms</artifactId>
-        <version>4.1.1.171.10</version>
+        <version>4.1.1.171.11</version>
     </parent>
 
     <groupId>org.glassfish.main.osgi-platforms</groupId>
