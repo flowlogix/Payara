@@ -1114,15 +1114,6 @@
 
     <profiles>
         <profile>
-            <id>jdk7</id>
-            <activation>
-                <jdk>1.7</jdk>
-            </activation>
-	    <properties>
-                <mq.version>5.1.1-b02.payara-p1</mq.version>
-            </properties>
-        </profile>
-        <profile>
             <id>ips</id>
             <activation>
                 <property>
