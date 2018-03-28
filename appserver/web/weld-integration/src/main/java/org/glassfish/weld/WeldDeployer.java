@@ -69,7 +69,18 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.javaee.core.deployment.ApplicationHolder;
 import org.glassfish.web.deployment.descriptor.AppListenerDescriptorImpl;
-import org.glassfish.weld.services.*;
+import org.glassfish.web.deployment.descriptor.ServletFilterDescriptor;
+import org.glassfish.web.deployment.descriptor.ServletFilterMappingDescriptor;
+import org.glassfish.weld.connector.WeldUtils;
+import org.glassfish.weld.connector.WeldUtils.BDAType;
+import org.glassfish.weld.services.BootstrapConfigurationImpl;
+import org.glassfish.weld.services.EjbServicesImpl;
+import org.glassfish.weld.services.ExternalConfigurationImpl;
+import org.glassfish.weld.services.InjectionServicesImpl;
+import org.glassfish.weld.services.NonModuleInjectionServices;
+import org.glassfish.weld.services.ProxyServicesImpl;
+import org.glassfish.weld.services.SecurityServicesImpl;
+import org.glassfish.weld.services.TransactionServicesImpl;
 import org.glassfish.weld.util.Util;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
@@ -641,15 +652,23 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                                    new Object [] {injectionServices, bda.getId()});
                     }
                     bda.getServices().add(InjectionServices.class, injectionServices);
+                    EEModuleDescriptor eeModuleDescriptor = getEEModuleDescriptor(bda);
+                    if (eeModuleDescriptor != null) {
+                        bda.getServices().add(EEModuleDescriptor.class, eeModuleDescriptor);
+                    }
 
-                    //Relevant in WAR BDA - WEB-INF/lib BDA scenarios
-                    for(BeanDeploymentArchive subBda: bda.getBeanDeploymentArchives()){
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.log(Level.FINE,
-                                       CDILoggerInfo.ADDING_INJECTION_SERVICES,
-                                       new Object [] {injectionServices, subBda.getId()});
+                    // Relevant in WAR BDA - WEB-INF/lib BDA scenarios
+                    for (BeanDeploymentArchive subBda : bda.getBeanDeploymentArchives()) {
+                        if (logger.isLoggable(FINE)) {
+                            logger.log(FINE,
+                                    ADDING_INJECTION_SERVICES,
+                                    new Object[] { injectionServices, subBda.getId() });
                         }
                         subBda.getServices().add(InjectionServices.class, injectionServices);
+                        eeModuleDescriptor = getEEModuleDescriptor(bda); // Should not be subBda?
+                        if (eeModuleDescriptor != null) {
+                            bda.getServices().add(EEModuleDescriptor.class, eeModuleDescriptor);
+                        }
                     }
                 }
 
@@ -666,6 +685,25 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         appInfo.addTransientAppMetaData(WELD_DEPLOYMENT, deploymentImpl);
 
         return wbApp;
+    }
+
+    private EEModuleDescriptor getEEModuleDescriptor(BeanDeploymentArchive beanDeploymentArchive) {
+        EEModuleDescriptor eeModuleDescriptor = null;
+
+        if (beanDeploymentArchive instanceof BeanDeploymentArchiveImpl) {
+
+            BDAType bdaType = ((BeanDeploymentArchiveImpl) beanDeploymentArchive).getBDAType();
+
+            if (bdaType.equals(JAR)) {
+                eeModuleDescriptor = new EEModuleDescriptorImpl(beanDeploymentArchive.getId(), EJB_JAR);
+            } else if (bdaType.equals(WAR)) {
+                eeModuleDescriptor = new EEModuleDescriptorImpl(beanDeploymentArchive.getId(), WEB);
+            } else if (bdaType.equals(RAR)) {
+                eeModuleDescriptor = new EEModuleDescriptorImpl(beanDeploymentArchive.getId(), CONNECTOR);
+            }
+        }
+
+        return eeModuleDescriptor;
     }
 
     private boolean isDevelopmentMode(DeploymentContext context) {
