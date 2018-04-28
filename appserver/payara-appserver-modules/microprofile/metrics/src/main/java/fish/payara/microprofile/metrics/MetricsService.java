@@ -102,7 +102,7 @@ public class MetricsService implements EventListener {
     @PostConstruct
     public void init() {
         events.register(this);
-        initMetadataConfig(JAXB.unmarshal(getConfigStream(), MBeanMetadataConfig.class));
+        initMetadataConfig(getConfig());
     }
 
     @Override
@@ -133,20 +133,25 @@ public class MetricsService implements EventListener {
                 globalTags);
     }
     
-    private InputStream getConfigStream() {
-        InputStream configStream = null;
+    private MBeanMetadataConfig getConfig() {
+        
+        InputStream defaultConfig = MetricsHelper.class.getResourceAsStream("/metrics.xml");
+        MBeanMetadataConfig config = JAXB.unmarshal(defaultConfig, MBeanMetadataConfig.class);
+        
+        
         File metricsResource = new File(serverEnv.getConfigDirPath(), "metrics.xml");
         if (metricsResource.exists()) {
             try {
-                configStream = new FileInputStream(metricsResource);
+                InputStream userMetrics = new FileInputStream(metricsResource);
+                MBeanMetadataConfig extraConfig = JAXB.unmarshal(userMetrics, MBeanMetadataConfig.class);
+                config.addBaseMetadata(extraConfig.getBaseMetadata());
+                config.addVendorMetadata(extraConfig.getVendorMetadata());
+                
             } catch (FileNotFoundException ex) {
                 //ignore
             }
         }
-        if (configStream == null) {
-            configStream = MetricsHelper.class.getResourceAsStream("/metrics.xml");
-        }
-        return configStream;
+        return config;
     }
 
     public Boolean isMetricEnabled() {
