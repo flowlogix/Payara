@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish.main.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>5.181.2</version>
+        <version>5.181.3</version>
     </parent>
     <artifactId>notification-newrelic</artifactId>
     <name>New Relic Notification Package</name>
