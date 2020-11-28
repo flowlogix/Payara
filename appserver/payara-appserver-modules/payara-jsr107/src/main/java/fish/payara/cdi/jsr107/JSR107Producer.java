@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) [2016-2017] Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) [2016-2020] Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,10 @@ package fish.payara.cdi.jsr107;
 
 import fish.payara.cdi.jsr107.impl.NamedCache;
 import com.hazelcast.core.HazelcastInstance;
+import fish.payara.context.TenantControlSettings;
 import fish.payara.nucleus.hazelcast.HazelcastCore;
+import fish.payara.nucleus.hazelcast.PayaraHazelcastTenant;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
@@ -50,6 +53,7 @@ import javax.cache.configuration.Factory;
 import javax.cache.configuration.FactoryBuilder;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
@@ -60,15 +64,15 @@ import javax.enterprise.inject.spi.InjectionPoint;
  * @author steve
  */
 public class JSR107Producer {
-    
+
     private static final Logger logger = Logger.getLogger(JSR107Producer.class.getName());
-    
+
     public JSR107Producer() {
         hazelcastCore = HazelcastCore.getCore();
     }
-    
+
     HazelcastCore hazelcastCore;
-    
+
     @Dependent
     @Produces
     CachingProvider getCachingProvider() {
@@ -79,7 +83,7 @@ public class JSR107Producer {
         }
         return hazelcastCore.getCachingProvider();
     }
-    
+
     @Dependent
     @Produces
     CacheManager getCacheManager(InjectionPoint point) {
@@ -89,7 +93,7 @@ public class JSR107Producer {
         }
         return hazelcastCore.getCachingProvider().getCacheManager();
     }
-    
+
     @Dependent
     @Produces
     HazelcastInstance getHazelcast() {
@@ -99,16 +103,16 @@ public class JSR107Producer {
         }
         return hazelcastCore.getInstance();
     }
-    
-    
+
+
     /**
      * Produces a Cache for injection. If the @NamedCache annotation is present the
      * cache will be created based on the values of the annotation field
-     * 
+     *
      * Otherwise the cache will be created with the cache name being equal
      * to the fully qualified name of the class into which it is injected
      * @param ip
-     * @return 
+     * @return
      */
     @Produces
     public <K,V> Cache<K, V> createCache(InjectionPoint ip) {
@@ -120,48 +124,48 @@ public class JSR107Producer {
 
         //determine the cache name first start with the default name
         String cacheName = ip.getMember().getDeclaringClass().getCanonicalName();
-        NamedCache ncqualifier = ip.getAnnotated().getAnnotation(NamedCache.class);      
+        NamedCache ncqualifier = ip.getAnnotated().getAnnotation(NamedCache.class);
         CacheManager manager = getCacheManager(ip);
-        
-        
+
+
         if (ncqualifier != null) {  // configure the cache based on the annotation
             String qualifierName = ncqualifier.cacheName();
             if (!"".equals(cacheName)) {
                 cacheName = qualifierName;
             }
             Class keyClass = ncqualifier.keyClass();
-            Class valueClass = ncqualifier.valueClass();           
+            Class valueClass = ncqualifier.valueClass();
             result = manager.getCache(cacheName, keyClass, valueClass);
             if (result == null) {
                 MutableConfiguration<K, V> config = new MutableConfiguration<>();
                 config.setTypes(keyClass, valueClass);
-                
+
                 // determine the expiry policy
                 Class expiryPolicyFactoryClass = ncqualifier.expiryPolicyFactoryClass();
                 if (!"Object".equals(expiryPolicyFactoryClass.getSimpleName())) {
                     Factory factory = FactoryBuilder.factoryOf(expiryPolicyFactoryClass);
                     config.setExpiryPolicyFactory(factory);
                 }
-                
+
                 // determine the cache writer if any
                 Class writerFactoryClass = ncqualifier.cacheWriterFactoryClass();
                 if (!"Object".equals(writerFactoryClass.getSimpleName())) {
                     Factory factory = FactoryBuilder.factoryOf(writerFactoryClass);
                     config.setCacheWriterFactory(factory);
-                }  
+                }
                 config.setWriteThrough(ncqualifier.writeThrough());
-                
+
                 // determine the cache loader if any
                 Class loaderFactoryClass = ncqualifier.cacheLoaderFactoryClass();
                 if (!"Object".equals(loaderFactoryClass.getSimpleName())) {
                     Factory factory = FactoryBuilder.factoryOf(loaderFactoryClass);
                     config.setCacheLoaderFactory(factory);
-                } 
+                }
                 config.setReadThrough(ncqualifier.readThrough());
-                
+
                 config.setManagementEnabled(ncqualifier.managementEnabled());
-                config.setStatisticsEnabled(ncqualifier.statisticsEnabled());                
-                result = manager.createCache(cacheName, config);                
+                config.setStatisticsEnabled(ncqualifier.statisticsEnabled());
+                result = manager.createCache(cacheName, config);
             }
         } else {  // configure a "raw" cache
             Bean<?> bean = ip.getBean();
@@ -185,5 +189,15 @@ public class JSR107Producer {
         }
         return result;
     }
-    
+
+    @Produces
+    @ApplicationScoped
+    TenantControlSettings getTenantControlSettings() {
+        return new TenantControlSettings() {
+            @Override
+            public Set<String> getDisabledTenants() {
+                return PayaraHazelcastTenant.getDisabledTenants();
+            }
+        };
+    }
 }

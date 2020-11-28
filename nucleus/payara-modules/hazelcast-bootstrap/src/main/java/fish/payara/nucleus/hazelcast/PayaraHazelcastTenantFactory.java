@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) [2016-2017] Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) [2016-2020] Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,22 +39,40 @@
  */
 package fish.payara.nucleus.hazelcast;
 
-import com.hazelcast.spi.discovery.integration.DiscoveryService;
-import com.hazelcast.spi.discovery.integration.DiscoveryServiceProvider;
-import com.hazelcast.spi.discovery.integration.DiscoveryServiceSettings;
+import com.hazelcast.spi.tenantcontrol.TenantControl;
+import com.hazelcast.spi.tenantcontrol.TenantControlFactory;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.JavaEEContextUtil;
 
 /**
+ * Java EE Context and class loading support for Hazelcast objects and thread-based callbacks
  *
- * @author steve
+ * @author lprimak
  */
-public class DomainDiscoveryServiceProvider implements DiscoveryServiceProvider {
+public class PayaraHazelcastTenantFactory implements TenantControlFactory {
+    private final JavaEEContextUtil ctxUtil = Globals.getDefaultHabitat().getService(JavaEEContextUtil.class);
+    private final InvocationManager invocationMgr = Globals.getDefaultHabitat().getService(InvocationManager.class);
 
-    public DomainDiscoveryServiceProvider() {
+    @Override
+    public TenantControl saveCurrentTenant() {
+        ComponentInvocation invocation = invocationMgr.getCurrentInvocation();
+        TenantControl tenantControl = TenantControl.NOOP_TENANT_CONTROL;
+        if (invocation != null) {
+            tenantControl = invocation.getRegistryFor(TenantControl.class);
+            if (tenantControl == null && ctxUtil.isInvocationLoaded()) {
+                tenantControl = new PayaraHazelcastTenant();
+                invocation.setRegistryFor(TenantControl.class, tenantControl);
+            } else if (tenantControl == null) {
+                tenantControl = TenantControl.NOOP_TENANT_CONTROL;
+            }
+        }
+        return tenantControl;
     }
 
     @Override
-    public DiscoveryService newDiscoveryService(DiscoveryServiceSettings dss) {
-        return new DomainDiscoveryService();
+    public boolean isClassesAlwaysAvailable() {
+        return false;
     }
-    
 }

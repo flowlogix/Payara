@@ -41,8 +41,8 @@
 
 package com.sun.ejb.containers;
 
-import com.hazelcast.core.IAtomicLong;
-import com.hazelcast.core.IMap;
+import com.hazelcast.cp.IAtomicLong;
+import com.hazelcast.map.IMap;
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.Container;
 import com.sun.ejb.EjbInvocation;
@@ -121,7 +121,7 @@ public abstract class AbstractSingletonContainer extends BaseContainer {
     private final InvocationInfo postConstructInvInfo;
     private final InvocationInfo preDestroyInvInfo;
 
-    protected final ClusteredSingletonLookup clusteredLookup = //
+    protected final ClusteredSingletonLookup clusteredLookup =
         new ClusteredSingletonLookupImpl(ejbDescriptor, componentId);
 
 
