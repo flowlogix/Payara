@@ -235,6 +235,16 @@ public class WeldUtils {
                         return true;
                     }
                 }
+                if (type instanceof ClassModel) {
+                    ClassModel classModel = (ClassModel) type;
+                    for (FieldModel fieldModel : classModel.getFields()) {
+                        for (AnnotationModel annotationModel : fieldModel.getAnnotations()) {
+                            if (Inject.class.getName().equals(annotationModel.getType().getName())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
         }
 
